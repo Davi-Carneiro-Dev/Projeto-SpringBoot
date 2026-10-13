@@ -1,8 +1,8 @@
 # Leque de Vagas - API
 
 API REST acadêmica para cadastro e consulta de vagas de tecnologia. Esta branch
-implementa a Frente 2: empresas e o relacionamento entre empresa e vagas, sobre
-a base da Frente 1.
+implementa as Frentes 2 e 4: empresas, relacionamento com vagas, busca,
+paginação e estatísticas, sobre a base da Frente 1.
 
 ## Requisitos
 
@@ -37,13 +37,13 @@ aberto em `http://localhost:8080/h2-console` usando:
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
-| GET | `/vagas` | Lista as vagas |
+| GET | `/vagas` | Lista vagas com paginação e ordenação |
 | GET | `/vagas/{id}` | Consulta uma vaga |
 | POST | `/vagas` | Cria uma vaga |
 | PUT | `/vagas/{id}` | Atualiza uma vaga |
 | DELETE | `/vagas/{id}` | Exclui uma vaga |
-| GET | `/vagas/busca` | Filtra por área, senioridade e iniciante |
-| GET | `/estatisticas` | Resume os números do catálogo |
+| GET | `/vagas/busca` | Busca avançada por área, senioridade, iniciante, local, empresa e data |
+| GET | `/estatisticas` | Resume vagas e empresas com consultas agregadas |
 | GET | `/empresas` | Lista as empresas por nome |
 | GET | `/empresas/{slug}` | Consulta o perfil público de uma empresa |
 | POST | `/empresas` | Cadastra uma empresa |
@@ -67,3 +67,14 @@ O arquivo `requisicoes.http` contém exemplos executáveis no IntelliJ.
 - Uma empresa que possui vagas não pode ser excluída.
 - A API continua recebendo e devolvendo `empresaSlug` nas vagas, preservando o
   contrato público da Frente 1, enquanto o banco utiliza o relacionamento JPA.
+
+## Recursos da Frente 4
+
+- `GET /vagas` aceita `pagina`, `tamanho`, `ordenarPor` e `direcao`.
+- O tamanho da página deve estar entre 1 e 100.
+- `GET /vagas/busca` aceita os filtros `area`, `senioridade`,
+  `aceitaIniciante`, `local`, `empresaSlug`, `dataInicio` e `dataFim`.
+- A busca pode ser ordenada por título, área, senioridade, local ou data de
+  publicação.
+- As estatísticas são calculadas no banco com `@Query` e projeções, sem carregar
+  todas as vagas em memória.

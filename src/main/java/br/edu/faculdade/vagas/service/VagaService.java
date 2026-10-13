@@ -2,19 +2,28 @@ package br.edu.faculdade.vagas.service;
 
 import br.edu.faculdade.vagas.dto.VagaEntrada;
 import br.edu.faculdade.vagas.dto.VagaResposta;
+import br.edu.faculdade.vagas.dto.PaginaResposta;
+import br.edu.faculdade.vagas.exception.RequisicaoInvalidaException;
 import br.edu.faculdade.vagas.exception.RecursoNaoEncontradoException;
 import br.edu.faculdade.vagas.model.Empresa;
 import br.edu.faculdade.vagas.model.Vaga;
 import br.edu.faculdade.vagas.repository.EmpresaRepository;
 import br.edu.faculdade.vagas.repository.VagaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class VagaService {
+
+    private static final Set<String> CAMPOS_ORDENAVEIS = Set.of(
+            "id", "titulo", "area", "senioridade", "local", "publicadaEm"
+    );
 
     private final VagaRepository repository;
     private final EmpresaRepository empresaRepository;
@@ -25,11 +34,13 @@ public class VagaService {
     }
 
     @Transactional(readOnly = true)
-    public List<VagaResposta> listar() {
-        return repository.findAll(Sort.by(Sort.Direction.DESC, "publicadaEm"))
-                .stream()
-                .map(VagaResposta::de)
-                .toList();
+    public PaginaResposta<VagaResposta> listar(int pagina, int tamanho,
+                                               String ordenarPor, String direcao) {
+        validarPaginacao(pagina, tamanho, ordenarPor, direcao);
+        Sort ordenacao = Sort.by(Sort.Direction.fromString(direcao), ordenarPor);
+        Page<VagaResposta> resultado = repository.findAll(PageRequest.of(pagina, tamanho, ordenacao))
+                .map(VagaResposta::de);
+        return PaginaResposta.de(resultado);
     }
 
     @Transactional(readOnly = true)
@@ -88,5 +99,20 @@ public class VagaService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
                         "Empresa com slug " + slug + " não encontrada."
                 ));
+    }
+
+    private void validarPaginacao(int pagina, int tamanho, String ordenarPor, String direcao) {
+        if (pagina < 0) {
+            throw new RequisicaoInvalidaException("A página não pode ser negativa.");
+        }
+        if (tamanho < 1 || tamanho > 100) {
+            throw new RequisicaoInvalidaException("O tamanho deve estar entre 1 e 100.");
+        }
+        if (!CAMPOS_ORDENAVEIS.contains(ordenarPor)) {
+            throw new RequisicaoInvalidaException("Campo de ordenação inválido: " + ordenarPor + ".");
+        }
+        if (!direcao.equalsIgnoreCase("asc") && !direcao.equalsIgnoreCase("desc")) {
+            throw new RequisicaoInvalidaException("A direção deve ser asc ou desc.");
+        }
     }
 }
