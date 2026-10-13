@@ -92,23 +92,4 @@ public class TratadorDeErros {
         return problema;
     }
 
-    @ExceptionHandler(RecursoConflitanteException.class)
-    public ProblemDetail recursoConflitante(RecursoConflitanteException excecao) {
-        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT,
-                excecao.getMessage()
-        );
-        problema.setTitle("Conflito de dados");
-        return problema;
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail integridadeDosDados(DataIntegrityViolationException excecao) {
-        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT,
-                "O recurso possui vínculos ou valores que impedem esta operação."
-        );
-        problema.setTitle("Conflito de dados");
-        return problema;
-    }
 }

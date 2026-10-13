@@ -2,11 +2,13 @@ package br.edu.faculdade.vagas.controller;
 
 import br.edu.faculdade.vagas.model.Area;
 import br.edu.faculdade.vagas.model.Candidatura;
+import br.edu.faculdade.vagas.model.Empresa;
 import br.edu.faculdade.vagas.model.Perfil;
 import br.edu.faculdade.vagas.model.Pessoa;
 import br.edu.faculdade.vagas.model.Senioridade;
 import br.edu.faculdade.vagas.model.Vaga;
 import br.edu.faculdade.vagas.repository.CandidaturaRepository;
+import br.edu.faculdade.vagas.repository.EmpresaRepository;
 import br.edu.faculdade.vagas.repository.PessoaRepository;
 import br.edu.faculdade.vagas.repository.VagaRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -42,12 +44,16 @@ class PessoaCandidaturaControllerTest {
     @Autowired
     private CandidaturaRepository candidaturaRepository;
 
+    @Autowired
+    private EmpresaRepository empresaRepository;
+
     @BeforeEach
     @AfterEach
     void limparBanco() {
         candidaturaRepository.deleteAll();
         pessoaRepository.deleteAll();
         vagaRepository.deleteAll();
+        empresaRepository.deleteAll();
     }
 
     @Test
@@ -171,6 +177,12 @@ class PessoaCandidaturaControllerTest {
     }
 
     private Vaga novaVaga() {
+        Empresa empresa = empresaRepository.save(new Empresa(
+                "Empresa Exemplo",
+                "empresa-exemplo",
+                "https://empresa-exemplo.com.br",
+                "Empresa especializada em tecnologia."
+        ));
         return new Vaga(
                 "Pessoa Desenvolvedora Java",
                 "Desenvolvimento de APIs REST.",
@@ -178,7 +190,7 @@ class PessoaCandidaturaControllerTest {
                 Senioridade.JUNIOR,
                 "Remoto",
                 true,
-                "empresa-exemplo"
+                empresa
         );
     }
 }
