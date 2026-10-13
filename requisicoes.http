@@ -1,5 +1,23 @@
 @baseUrl = http://localhost:8080
 @vagaId = 1
+@empresaSlug = empresa-exemplo
+
+### Criar empresa
+POST {{baseUrl}}/empresas
+Content-Type: application/json
+
+{
+  "nome": "Empresa Exemplo",
+  "slug": "{{empresaSlug}}",
+  "site": "https://empresa-exemplo.com.br",
+  "descricao": "Empresa especializada no desenvolvimento de produtos digitais."
+}
+
+### Listar empresas
+GET {{baseUrl}}/empresas
+
+### Consultar perfil público da empresa
+GET {{baseUrl}}/empresas/{{empresaSlug}}
 
 ### Criar vaga
 POST {{baseUrl}}/vagas
@@ -15,8 +33,11 @@ Content-Type: application/json
   "empresaSlug": "empresa-exemplo"
 }
 
-### Listar todas as vagas
-GET {{baseUrl}}/vagas
+### Listar vagas com paginação e ordenação
+GET {{baseUrl}}/vagas?pagina=0&tamanho=10&ordenarPor=publicadaEm&direcao=desc
+
+### Listar as vagas de uma empresa
+GET {{baseUrl}}/empresas/{{empresaSlug}}/vagas
 
 ### Buscar vaga por ID
 GET {{baseUrl}}/vagas/{{vagaId}}
@@ -38,11 +59,28 @@ Content-Type: application/json
 ### Filtrar vagas (todos os parâmetros são opcionais)
 GET {{baseUrl}}/vagas/busca?area=BACK_END&senioridade=PLENO&aceitaIniciante=false
 
+### Busca avançada por empresa, local, data e ordenação
+GET {{baseUrl}}/vagas/busca?empresaSlug={{empresaSlug}}&local=remoto&dataInicio=2026-01-01&dataFim=2026-12-31&ordenarPor=titulo&direcao=asc
+
 ### Consultar estatísticas
 GET {{baseUrl}}/estatisticas
 
 ### Excluir vaga
 DELETE {{baseUrl}}/vagas/{{vagaId}}
+
+### Atualizar empresa
+PUT {{baseUrl}}/empresas/{{empresaSlug}}
+Content-Type: application/json
+
+{
+  "nome": "Empresa Exemplo Atualizada",
+  "slug": "empresa-exemplo-atualizada",
+  "site": "https://empresa-exemplo.com.br",
+  "descricao": "Empresa de tecnologia com perfil atualizado."
+}
+
+### Excluir empresa (somente quando não possuir vagas)
+DELETE {{baseUrl}}/empresas/{{empresaSlug}}
 
 ### Exemplo de validação com erro 400
 POST {{baseUrl}}/vagas

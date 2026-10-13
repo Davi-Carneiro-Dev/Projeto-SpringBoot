@@ -5,6 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +23,46 @@ public class TratadorDeErros {
                 excecao.getMessage()
         );
         problema.setTitle("Recurso não encontrado");
+        return problema;
+    }
+
+    @ExceptionHandler(RecursoConflitanteException.class)
+    public ProblemDetail recursoConflitante(RecursoConflitanteException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                excecao.getMessage()
+        );
+        problema.setTitle("Conflito de dados");
+        return problema;
+    }
+
+    @ExceptionHandler(RequisicaoInvalidaException.class)
+    public ProblemDetail requisicaoInvalida(RequisicaoInvalidaException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                excecao.getMessage()
+        );
+        problema.setTitle("Parâmetro inválido");
+        return problema;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail parametroIncompativel(MethodArgumentTypeMismatchException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "O parâmetro " + excecao.getName() + " possui um valor incompatível."
+        );
+        problema.setTitle("Parâmetro inválido");
+        return problema;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail integridadeDosDados(DataIntegrityViolationException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "A operação viola uma restrição de integridade dos dados."
+        );
+        problema.setTitle("Conflito de dados");
         return problema;
     }
 

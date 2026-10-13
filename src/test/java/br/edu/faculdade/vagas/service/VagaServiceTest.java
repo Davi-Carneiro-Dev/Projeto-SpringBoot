@@ -4,9 +4,11 @@ import br.edu.faculdade.vagas.dto.VagaEntrada;
 import br.edu.faculdade.vagas.dto.VagaResposta;
 import br.edu.faculdade.vagas.exception.RecursoNaoEncontradoException;
 import br.edu.faculdade.vagas.model.Area;
+import br.edu.faculdade.vagas.model.Empresa;
 import br.edu.faculdade.vagas.model.Senioridade;
 import br.edu.faculdade.vagas.model.Vaga;
 import br.edu.faculdade.vagas.repository.VagaRepository;
+import br.edu.faculdade.vagas.repository.EmpresaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,10 +28,20 @@ class VagaServiceTest {
     @Mock
     private VagaRepository repository;
 
+    @Mock
+    private EmpresaRepository empresaRepository;
+
     @Test
     void deveCriarUmaVagaComOsDadosRecebidos() {
-        VagaService service = new VagaService(repository);
+        VagaService service = new VagaService(repository, empresaRepository);
         VagaEntrada entrada = entradaValida();
+        Empresa empresa = new Empresa(
+                "Empresa Exemplo",
+                "empresa-exemplo",
+                "https://empresa-exemplo.com.br",
+                "Empresa de tecnologia."
+        );
+        when(empresaRepository.findBySlug("empresa-exemplo")).thenReturn(Optional.of(empresa));
         when(repository.save(org.mockito.ArgumentMatchers.any(Vaga.class)))
                 .thenAnswer(invocacao -> invocacao.getArgument(0));
 
@@ -47,7 +59,7 @@ class VagaServiceTest {
 
     @Test
     void deveInformarQuandoAVagaNaoExiste() {
-        VagaService service = new VagaService(repository);
+        VagaService service = new VagaService(repository, empresaRepository);
         when(repository.findById(99L)).thenReturn(Optional.empty());
 
         RecursoNaoEncontradoException erro = assertThrows(

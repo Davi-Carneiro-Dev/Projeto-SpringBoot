@@ -1,9 +1,11 @@
 package br.edu.faculdade.vagas.controller;
 
 import br.edu.faculdade.vagas.model.Area;
+import br.edu.faculdade.vagas.model.Empresa;
 import br.edu.faculdade.vagas.model.Senioridade;
 import br.edu.faculdade.vagas.model.Vaga;
 import br.edu.faculdade.vagas.repository.VagaRepository;
+import br.edu.faculdade.vagas.repository.EmpresaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +32,18 @@ class VagaControllerTest {
     @Autowired
     private VagaRepository repository;
 
+    @Autowired
+    private EmpresaRepository empresaRepository;
+
     @BeforeEach
     void limparBanco() {
         repository.deleteAll();
+        empresaRepository.deleteAll();
     }
 
     @Test
     void deveCriarEConsultarUmaVaga() throws Exception {
+        criarEmpresa("empresa-exemplo", "Empresa Exemplo");
         String json = """
                 {
                   "titulo": "Pessoa Desenvolvedora Java",
@@ -107,6 +114,7 @@ class VagaControllerTest {
 
     @Test
     void deveAtualizarEExcluirUmaVaga() throws Exception {
+        Empresa empresa = criarEmpresa("empresa-exemplo", "Empresa Exemplo");
         Vaga vaga = repository.save(new Vaga(
                 "Título original",
                 "Descrição original da vaga.",
@@ -114,7 +122,7 @@ class VagaControllerTest {
                 Senioridade.JUNIOR,
                 "Remoto",
                 true,
-                "empresa-exemplo"
+                empresa
         ));
 
         String atualizacao = """
@@ -145,6 +153,8 @@ class VagaControllerTest {
 
     @Test
     void deveFiltrarVagasECalcularEstatisticas() throws Exception {
+        Empresa empresaA = criarEmpresa("empresa-a", "Empresa A");
+        Empresa empresaB = criarEmpresa("empresa-b", "Empresa B");
         repository.save(new Vaga(
                 "Desenvolvimento Java",
                 "Desenvolvimento de APIs.",
@@ -152,7 +162,7 @@ class VagaControllerTest {
                 Senioridade.JUNIOR,
                 "Remoto",
                 true,
-                "empresa-a"
+                empresaA
         ));
         repository.save(new Vaga(
                 "Análise de dados",
@@ -161,7 +171,7 @@ class VagaControllerTest {
                 Senioridade.PLENO,
                 "Híbrido",
                 false,
-                "empresa-b"
+                empresaB
         ));
 
         mockMvc.perform(get("/vagas/busca")
@@ -178,5 +188,14 @@ class VagaControllerTest {
                 .andExpect(jsonPath("$.vagasParaIniciantes").value(1))
                 .andExpect(jsonPath("$.porArea.BACK_END").value(1))
                 .andExpect(jsonPath("$.porArea.DADOS").value(1));
+    }
+
+    private Empresa criarEmpresa(String slug, String nome) {
+        return empresaRepository.save(new Empresa(
+                nome,
+                slug,
+                "https://" + slug + ".com.br",
+                "Empresa de tecnologia."
+        ));
     }
 }
