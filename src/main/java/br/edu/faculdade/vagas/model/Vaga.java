@@ -7,6 +7,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -40,8 +43,9 @@ public class Vaga {
     @Column(nullable = false)
     private Boolean aceitaIniciante;
 
-    @Column(nullable = false, length = 100)
-    private String empresaSlug;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private Empresa empresa;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime publicadaEm;
@@ -50,14 +54,14 @@ public class Vaga {
     }
 
     public Vaga(String titulo, String descricao, Area area, Senioridade senioridade,
-                String local, Boolean aceitaIniciante, String empresaSlug) {
+                String local, Boolean aceitaIniciante, Empresa empresa) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.area = area;
         this.senioridade = senioridade;
         this.local = local;
         this.aceitaIniciante = aceitaIniciante;
-        this.empresaSlug = empresaSlug;
+        this.empresa = empresa;
     }
 
     @PrePersist
@@ -68,14 +72,14 @@ public class Vaga {
     }
 
     public void atualizar(String titulo, String descricao, Area area, Senioridade senioridade,
-                          String local, Boolean aceitaIniciante, String empresaSlug) {
+                          String local, Boolean aceitaIniciante, Empresa empresa) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.area = area;
         this.senioridade = senioridade;
         this.local = local;
         this.aceitaIniciante = aceitaIniciante;
-        this.empresaSlug = empresaSlug;
+        this.empresa = empresa;
     }
 
     public Long getId() {
@@ -107,7 +111,11 @@ public class Vaga {
     }
 
     public String getEmpresaSlug() {
-        return empresaSlug;
+        return empresa.getSlug();
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
     }
 
     public LocalDateTime getPublicadaEm() {

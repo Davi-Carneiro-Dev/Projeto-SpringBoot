@@ -1,5 +1,23 @@
 @baseUrl = http://localhost:8080
 @vagaId = 1
+@empresaSlug = empresa-exemplo
+
+### Criar empresa
+POST {{baseUrl}}/empresas
+Content-Type: application/json
+
+{
+  "nome": "Empresa Exemplo",
+  "slug": "{{empresaSlug}}",
+  "site": "https://empresa-exemplo.com.br",
+  "descricao": "Empresa especializada no desenvolvimento de produtos digitais."
+}
+
+### Listar empresas
+GET {{baseUrl}}/empresas
+
+### Consultar perfil público da empresa
+GET {{baseUrl}}/empresas/{{empresaSlug}}
 
 ### Criar vaga
 POST {{baseUrl}}/vagas
@@ -17,6 +35,9 @@ Content-Type: application/json
 
 ### Listar todas as vagas
 GET {{baseUrl}}/vagas
+
+### Listar as vagas de uma empresa
+GET {{baseUrl}}/empresas/{{empresaSlug}}/vagas
 
 ### Buscar vaga por ID
 GET {{baseUrl}}/vagas/{{vagaId}}
@@ -43,6 +64,20 @@ GET {{baseUrl}}/estatisticas
 
 ### Excluir vaga
 DELETE {{baseUrl}}/vagas/{{vagaId}}
+
+### Atualizar empresa
+PUT {{baseUrl}}/empresas/{{empresaSlug}}
+Content-Type: application/json
+
+{
+  "nome": "Empresa Exemplo Atualizada",
+  "slug": "empresa-exemplo-atualizada",
+  "site": "https://empresa-exemplo.com.br",
+  "descricao": "Empresa de tecnologia com perfil atualizado."
+}
+
+### Excluir empresa (somente quando não possuir vagas)
+DELETE {{baseUrl}}/empresas/{{empresaSlug}}
 
 ### Exemplo de validação com erro 400
 POST {{baseUrl}}/vagas

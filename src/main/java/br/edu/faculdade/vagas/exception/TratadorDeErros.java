@@ -3,6 +3,7 @@ package br.edu.faculdade.vagas.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,26 @@ public class TratadorDeErros {
                 excecao.getMessage()
         );
         problema.setTitle("Recurso não encontrado");
+        return problema;
+    }
+
+    @ExceptionHandler(RecursoConflitanteException.class)
+    public ProblemDetail recursoConflitante(RecursoConflitanteException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                excecao.getMessage()
+        );
+        problema.setTitle("Conflito de dados");
+        return problema;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail integridadeDosDados(DataIntegrityViolationException excecao) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "A operação viola uma restrição de integridade dos dados."
+        );
+        problema.setTitle("Conflito de dados");
         return problema;
     }
 

@@ -3,7 +3,9 @@ package br.edu.faculdade.vagas.service;
 import br.edu.faculdade.vagas.dto.VagaEntrada;
 import br.edu.faculdade.vagas.dto.VagaResposta;
 import br.edu.faculdade.vagas.exception.RecursoNaoEncontradoException;
+import br.edu.faculdade.vagas.model.Empresa;
 import br.edu.faculdade.vagas.model.Vaga;
+import br.edu.faculdade.vagas.repository.EmpresaRepository;
 import br.edu.faculdade.vagas.repository.VagaRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,11 @@ import java.util.List;
 public class VagaService {
 
     private final VagaRepository repository;
+    private final EmpresaRepository empresaRepository;
 
-    public VagaService(VagaRepository repository) {
+    public VagaService(VagaRepository repository, EmpresaRepository empresaRepository) {
         this.repository = repository;
+        this.empresaRepository = empresaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -42,6 +46,7 @@ public class VagaService {
     @Transactional
     public VagaResposta atualizar(Long id, VagaEntrada entrada) {
         Vaga vaga = encontrar(id);
+        Empresa empresa = encontrarEmpresa(entrada.empresaSlug());
         vaga.atualizar(
                 entrada.titulo(),
                 entrada.descricao(),
@@ -49,7 +54,7 @@ public class VagaService {
                 entrada.senioridade(),
                 entrada.local(),
                 entrada.aceitaIniciante(),
-                entrada.empresaSlug()
+                empresa
         );
         return VagaResposta.de(vaga);
     }
@@ -66,6 +71,7 @@ public class VagaService {
     }
 
     private Vaga novaVaga(VagaEntrada entrada) {
+        Empresa empresa = encontrarEmpresa(entrada.empresaSlug());
         return new Vaga(
                 entrada.titulo(),
                 entrada.descricao(),
@@ -73,7 +79,14 @@ public class VagaService {
                 entrada.senioridade(),
                 entrada.local(),
                 entrada.aceitaIniciante(),
-                entrada.empresaSlug()
+                empresa
         );
+    }
+
+    private Empresa encontrarEmpresa(String slug) {
+        return empresaRepository.findBySlug(slug)
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Empresa com slug " + slug + " não encontrada."
+                ));
     }
 }

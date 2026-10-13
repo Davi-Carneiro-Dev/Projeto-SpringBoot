@@ -23,4 +23,8 @@ public interface VagaRepository extends JpaRepository<Vaga, Long> {
             @Param("senioridade") Senioridade senioridade,
             @Param("aceitaIniciante") Boolean aceitaIniciante
     );
+
+    List<Vaga> findByEmpresa_SlugOrderByPublicadaEmDesc(String slug);
+
+    boolean existsByEmpresa_Slug(String slug);
 }
