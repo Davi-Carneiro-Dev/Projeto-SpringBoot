@@ -57,3 +57,58 @@ Content-Type: application/json
   "aceitaIniciante": null,
   "empresaSlug": "Slug Inválido"
 }
+
+### Criar pessoa candidata
+POST {{baseUrl}}/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva",
+  "email": "maria@exemplo.com",
+  "perfil": "CANDIDATO"
+}
+
+### Listar pessoas
+GET {{baseUrl}}/pessoas
+
+### Consultar pessoa
+GET {{baseUrl}}/pessoas/1
+
+### Atualizar pessoa
+PUT {{baseUrl}}/pessoas/1
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva Souza",
+  "email": "maria@exemplo.com",
+  "perfil": "CANDIDATO"
+}
+
+### Criar candidatura (execute primeiro os POSTs de vaga e pessoa)
+POST {{baseUrl}}/candidaturas
+Content-Type: application/json
+
+{
+  "pessoaId": 1,
+  "vagaId": 1
+}
+
+### Listar candidaturas
+GET {{baseUrl}}/candidaturas
+
+### Filtrar candidaturas por pessoa e/ou vaga
+GET {{baseUrl}}/candidaturas?pessoaId=1&vagaId=1
+
+### Atualizar situação da candidatura
+PATCH {{baseUrl}}/candidaturas/1/situacao
+Content-Type: application/json
+
+{
+  "situacao": "EM_ANALISE"
+}
+
+### Excluir candidatura
+DELETE {{baseUrl}}/candidaturas/1
+
+### Excluir pessoa sem candidaturas
+DELETE {{baseUrl}}/pessoas/1
