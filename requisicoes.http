@@ -1,0 +1,59 @@
+@baseUrl = http://localhost:8080
+@vagaId = 1
+
+### Criar vaga
+POST {{baseUrl}}/vagas
+Content-Type: application/json
+
+{
+  "titulo": "Pessoa Desenvolvedora Java",
+  "descricao": "Desenvolvimento e manutenção de APIs REST com Spring Boot.",
+  "area": "BACK_END",
+  "senioridade": "JUNIOR",
+  "local": "Remoto",
+  "aceitaIniciante": true,
+  "empresaSlug": "empresa-exemplo"
+}
+
+### Listar todas as vagas
+GET {{baseUrl}}/vagas
+
+### Buscar vaga por ID
+GET {{baseUrl}}/vagas/{{vagaId}}
+
+### Atualizar vaga
+PUT {{baseUrl}}/vagas/{{vagaId}}
+Content-Type: application/json
+
+{
+  "titulo": "Pessoa Desenvolvedora Java e Spring",
+  "descricao": "Desenvolvimento de APIs REST com Java e Spring Boot.",
+  "area": "BACK_END",
+  "senioridade": "PLENO",
+  "local": "Híbrido",
+  "aceitaIniciante": false,
+  "empresaSlug": "empresa-exemplo"
+}
+
+### Filtrar vagas (todos os parâmetros são opcionais)
+GET {{baseUrl}}/vagas/busca?area=BACK_END&senioridade=PLENO&aceitaIniciante=false
+
+### Consultar estatísticas
+GET {{baseUrl}}/estatisticas
+
+### Excluir vaga
+DELETE {{baseUrl}}/vagas/{{vagaId}}
+
+### Exemplo de validação com erro 400
+POST {{baseUrl}}/vagas
+Content-Type: application/json
+
+{
+  "titulo": "",
+  "descricao": "",
+  "area": null,
+  "senioridade": null,
+  "local": "",
+  "aceitaIniciante": null,
+  "empresaSlug": "Slug Inválido"
+}
